@@ -1,4 +1,4 @@
-# Final
+# Final synthetic data
 
 library(boot)
 library(tidyverse)
@@ -7,8 +7,10 @@ library(geometry)
 
 pca = read.csv("bootstrap_PCA.csv")
 
+# Make an empty dataframe that will be populated with all the synthetic data
 NND_all <- tibble()
 
+# For loop to apply each function for each species richness (N) from 2-20
 for (N in 2:20) {
   # Sampling ----
   random_species <- function(data, N) {
@@ -24,7 +26,7 @@ for (N in 2:20) {
     return(sampled)
   }
   
-  # 1000 replicates with 3 genera/species each
+  # 1000 replicates with N genera/species each
   N_rep <- 1000
   boot_list <- replicate(
     N_rep, 
@@ -103,12 +105,6 @@ for (N in 2:20) {
     cd = map_dbl(boot_list, avg_cd)
   )
   
-  # Adding species richness as a column
-  nnd_df <- nnd_df %>%
-    mutate(sp_rich = N) %>% 
-    mutate(replicate = as.integer(replicate))
-
-  NND_all <- bind_rows(NND_all, final_df)
   # Hypervolume ----
   # Create empty dataframe, which will be populated later
   hv_df <- tibble(
@@ -150,11 +146,18 @@ for (N in 2:20) {
     }
   }
   # Cleaning ----
+  # Adding species richness as a column
+  nnd_df <- nnd_df %>%
+    mutate(sp_rich = N) %>% 
+    mutate(replicate = as.integer(replicate))
+  
   # Adding centroid, CD, and hypervolume to original NND dataframe
   final_df <- nnd_df %>%
     left_join(n_centroid, by = "replicate") %>%
     left_join(n_cd, by = "replicate") %>% 
     left_join(hv_df, by = "replicate")
+  
+  NND_all <- bind_rows(NND_all, final_df)
 }
 
 final_all <- NND_all %>% 
