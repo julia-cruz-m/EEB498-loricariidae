@@ -40,13 +40,8 @@ ggplot(final, aes(x = type, y = cd, fill = type)) +
   theme_cowplot() +
   theme(legend.position = "none")
 
-# Adjusting so that species richness does not confound w/ results
-# Currently empirical only has a max richness of 13 whereas synthetic has 20
-rich_adj <- final %>% 
-  filter(sp_rich < 14)
-
 # HV3D
-ggplot(rich_adj, aes(x = type, y = hv3d, fill = type)) + 
+ggplot(final, aes(x = type, y = hv3d, fill = type)) + 
   geom_boxplot() +
   geom_signif(comparisons = list(c("Empirical", "Synthetic")), 
               map_signif_level=TRUE) +
@@ -56,7 +51,7 @@ ggplot(rich_adj, aes(x = type, y = hv3d, fill = type)) +
   theme(legend.position = "none")
 
 # HV6D
-ggplot(rich_adj, aes(x = type, y = hv6d, fill = type)) + 
+ggplot(final, aes(x = type, y = hv6d, fill = type)) + 
   geom_boxplot() +
   geom_signif(comparisons = list(c("Empirical", "Synthetic")), 
               map_signif_level=TRUE) +
